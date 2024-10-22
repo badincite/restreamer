@@ -18,7 +18,7 @@ jobs:
             - name: Checkout restreamr-ui repo
               uses: actions/checkout@v4
               with:
-                  repository: datarhei/restreamer-ui
+                  repository: badincite/restreamer-ui
                   path: ./ui
 
             - name: Get latest version and bundle from UI
@@ -108,7 +108,7 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   build-args: |
-                      RESTREAMER_UI_IMAGE=datarhei/restreamer-ui:${{ matrix.ui }}
+                      RESTREAMER_UI_IMAGE=badincite/restreamer-ui:${{ matrix.ui }}
                       CORE_IMAGE=datarhei/base:${{ matrix.core }}
                       FFMPEG_IMAGE=datarhei/base:${{ matrix.ffmpeg }}
                   platforms: ${{ matrix.platforms }}

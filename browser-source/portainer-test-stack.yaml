@@ -44,7 +44,7 @@ services:
     entrypoint: ["/bin/sh", "-ec"]
     command: |
       hash="$$(caddy hash-password --plaintext "$$CONTROL_PASSWORD")"
-      printf 'https://192.168.1.11:16080 {\n  tls internal\n  basic_auth {\n    admin %s\n  }\n  reverse_proxy browser-source:6080\n}\n' "$$hash" > /tmp/Caddyfile
+      printf 'https://192.168.1.11:16080 {\n  tls internal\n  basic_auth {\n    admin %s\n  }\n  reverse_proxy browser-source:6080 {\n    header_up -Authorization\n  }\n}\n' "$$hash" > /tmp/Caddyfile
       exec caddy run --config /tmp/Caddyfile --adapter caddyfile
     ports:
       - "192.168.1.11:16080:16080"

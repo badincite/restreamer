@@ -12,10 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openbox \
     pulseaudio \
     pulseaudio-utils \
+    tigervnc-scraping-server \
     tini \
     websockify \
     x11-utils \
-    x11vnc \
     xvfb \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 browser \

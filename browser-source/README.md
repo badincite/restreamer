@@ -49,3 +49,9 @@ internal to the test stack. Create a Restreamer network-source channel
 using `rtmp://restreamer-test:1935/live/browser.stream` after initial setup.
 Keep this test stack private while signing in to the website: the browser's
 screen is captured, including any visible login form.
+
+Set `BROWSER_WIDTH`, `BROWSER_HEIGHT`, and `BROWSER_FPS` in Portainer's stack
+environment to change the captured display. For 1080p, use `1920`, `1080`,
+and initially `12` fps. Redeploying the stack applies the new size without
+deleting the browser profile. Software H.264 encoding at 1080p may overload a
+small server; lower `BROWSER_FPS` if playback stutters.

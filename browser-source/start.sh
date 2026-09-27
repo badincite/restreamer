@@ -49,7 +49,7 @@ pactl load-module module-null-sink sink_name=browser_sink >/dev/null
 pactl set-default-sink browser_sink
 
 openbox >/dev/null 2>&1 &
-x11vnc -display "$DISPLAY" -localhost -rfbport 5900 -nopw -forever -shared -quiet &
+x0tigervncserver -display "$DISPLAY" -rfbport 5900 -localhost yes -SecurityTypes None -fg &
 websockify --web=/usr/share/novnc 0.0.0.0:6080 localhost:5900 &
 
 chromium \

@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate Portainer test stack
+        run: CONTROL_PASSWORD=ci-test-only docker compose -f browser-source/portainer-test-stack.yaml config --quiet
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Build browser source image

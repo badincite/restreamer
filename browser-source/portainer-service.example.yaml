@@ -1,0 +1,20 @@
+# Merge this service and volume into your existing Restreamer Portainer stack.
+# Keep your existing Restreamer service, ports, and data mounts unchanged.
+services:
+  browser-source:
+    image: badincite/restreamer:browser-experimental
+    restart: unless-stopped
+    shm_size: 1gb
+    environment:
+      BROWSER_URL: https://seasons4u.com/
+      # Set this to the channel's RTMP publish URL from Restreamer.
+      # Replace only the host with your Restreamer service name in this stack.
+      BROWSER_RTMP_URL: ${BROWSER_RTMP_URL}
+    ports:
+      # Access through an SSH tunnel from your computer; do not publish publicly.
+      - 127.0.0.1:6080:6080
+    volumes:
+      - browser-profile:/home/browser/profile
+
+volumes:
+  browser-profile:

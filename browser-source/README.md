@@ -34,14 +34,15 @@ DRM bypass, and the site must permit your intended use and rebroadcast.
 
 `portainer-test-stack.yaml` runs the custom Restreamer image and browser source
 together with new, dedicated named volumes. It leaves an existing standalone
-Restreamer installation untouched. Both web ports bind to server localhost;
-neither RTMP nor browser control is published to the LAN.
+Restreamer installation untouched. The test Restreamer UI is available on the
+LAN at `http://192.168.1.11:18080/`. Browser control remains bound to server
+localhost; neither RTMP nor browser control is published to the LAN.
 
 Open two SSH tunnels when testing:
 
-`ssh -L 18080:127.0.0.1:18080 -L 16080:127.0.0.1:16080 USER@SERVER`
+`ssh -L 16080:127.0.0.1:16080 USER@SERVER`
 
-Restreamer is at `http://127.0.0.1:18080/` and browser control is at
+Restreamer is at `http://192.168.1.11:18080/` and browser control is at
 `http://127.0.0.1:16080/vnc.html`. Create a Restreamer network-source channel
 using `rtmp://restreamer-test:1935/live/browser.stream` after initial setup.
 Keep this test stack private while signing in to the website: the browser's

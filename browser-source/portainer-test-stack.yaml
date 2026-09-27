@@ -10,7 +10,7 @@ services:
       CORE_RTMP_ENABLE: "true"
       CORE_RTMP_APP: /live
     ports:
-      - "127.0.0.1:18080:8080"
+      - "192.168.1.11:18080:8080"
     volumes:
       - restreamer-test-config:/core/config
       - restreamer-test-data:/core/data

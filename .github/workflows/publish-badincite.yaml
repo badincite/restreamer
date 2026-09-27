@@ -1,6 +1,8 @@
 name: Publish badincite Restreamer
 
 on:
+  push:
+    branches: [2.x]
   workflow_dispatch:
 
 permissions:
@@ -31,18 +33,19 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
+        if: github.event_name == 'workflow_dispatch'
         uses: docker/login-action@v3
         with:
           username: badincite
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and publish
+      - name: Build image and publish when dispatched
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile.badincite
           platforms: linux/amd64
-          push: true
+          push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
             badincite/restreamer:latest
             badincite/restreamer:bundle-${{ steps.revisions.outputs.bundle }}-ui-${{ steps.revisions.outputs.ui }}

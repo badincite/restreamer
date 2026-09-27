@@ -1,0 +1,32 @@
+ARG NODE_IMAGE=node:21-alpine3.20
+ARG CORE_IMAGE=datarhei/base:alpine-core-latest
+ARG FFMPEG_IMAGE=datarhei/base:alpine-ffmpeg-latest
+
+FROM ${NODE_IMAGE} AS ui
+WORKDIR /ui
+ENV PUBLIC_URL=./
+COPY ui/package.json ui/yarn.lock ui/.yarnrc.yml ./
+RUN yarn install --frozen-lockfile
+COPY ui/ ./
+RUN yarn build
+
+FROM ${CORE_IMAGE} AS core
+FROM ${FFMPEG_IMAGE}
+
+COPY --from=core /core /core
+COPY --from=ui /ui/build /core/ui
+COPY CHANGELOG.md /core/ui/CHANGELOG.md
+COPY run.sh /core/bin/run.sh
+COPY ui-root /core/ui-root
+
+RUN ffmpeg -buildconf
+
+ENV CORE_CONFIGFILE=/core/config/config.json \
+    CORE_DB_DIR=/core/config \
+    CORE_ROUTER_UI_PATH=/core/ui \
+    CORE_STORAGE_DISK_DIR=/core/data
+
+EXPOSE 8080/tcp 8181/tcp 1935/tcp 1936/tcp 6000/udp
+VOLUME ["/core/data", "/core/config"]
+ENTRYPOINT ["/core/bin/run.sh"]
+WORKDIR /core

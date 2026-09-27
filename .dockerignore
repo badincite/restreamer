@@ -1,0 +1,4 @@
+.git
+ui/.git
+ui/node_modules
+ui/build

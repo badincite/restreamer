@@ -1,0 +1,40 @@
+# Isolated test deployment. It does not reuse or modify existing Restreamer
+# containers, volumes, networks, or published ports.
+services:
+  restreamer-test:
+    image: badincite/restreamer:bundle-879ac3a70ee7-ui-67cc21b1fabc
+    restart: unless-stopped
+    cpus: 0.75
+    mem_limit: 768m
+    environment:
+      CORE_RTMP_ENABLE: "true"
+      CORE_RTMP_APP: /live
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - restreamer-test-config:/core/config
+      - restreamer-test-data:/core/data
+
+  browser-source:
+    image: badincite/restreamer:browser-experimental
+    restart: unless-stopped
+    depends_on:
+      - restreamer-test
+    cpus: 1.0
+    mem_limit: 1536m
+    shm_size: 512m
+    environment:
+      BROWSER_URL: https://seasons4u.com/
+      BROWSER_WIDTH: "854"
+      BROWSER_HEIGHT: "480"
+      BROWSER_FPS: "12"
+      BROWSER_RTMP_URL: rtmp://restreamer-test:1935/live/browser.stream
+    ports:
+      - "127.0.0.1:16080:6080"
+    volumes:
+      - browser-test-profile:/home/browser/profile
+
+volumes:
+  restreamer-test-config:
+  restreamer-test-data:
+  browser-test-profile:

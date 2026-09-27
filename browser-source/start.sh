@@ -10,6 +10,22 @@ BROWSER_PROFILE_DIR=${BROWSER_PROFILE_DIR:-/home/browser/profile}
 mkdir -p "$XDG_RUNTIME_DIR" "$BROWSER_PROFILE_DIR"
 chmod 700 "$XDG_RUNTIME_DIR"
 
+# Chromium leaves these links behind when Docker stops the container. The
+# profile volume belongs to this single browser service, so clear stale locks
+# before Chromium starts again without touching browsing data or cookies.
+for lock in SingletonCookie SingletonLock SingletonSocket; do
+    if [ -L "$BROWSER_PROFILE_DIR/$lock" ]; then
+        rm -f -- "$BROWSER_PROFILE_DIR/$lock"
+    fi
+done
+
+# A Docker restart reuses the writable layer and can leave Xvfb's lock behind.
+# This service owns display :99; remove only its stale lock/socket when no X
+# server answers there.
+if ! xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; then
+    rm -f -- /tmp/.X99-lock /tmp/.X11-unix/X99
+fi
+
 Xvfb "$DISPLAY" -screen 0 "${BROWSER_WIDTH}x${BROWSER_HEIGHT}x24" -nolisten tcp &
 xvfb_pid=$!
 

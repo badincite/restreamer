@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 browser \
+    && install -d -m 1777 /tmp/.X11-unix \
     && mkdir -p /home/browser/profile \
     && chown -R browser:browser /home/browser
 

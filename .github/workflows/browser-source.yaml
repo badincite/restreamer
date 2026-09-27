@@ -49,10 +49,22 @@ jobs:
             sleep 2
           done
           curl --fail http://127.0.0.1:6081/vnc.html > /dev/null
+          docker exec browser-source-smoke python3 -c \
+            "import socket; s=socket.create_connection(('127.0.0.1',5900),5); s.settimeout(5); assert s.recv(12).startswith(b'RFB '), 'VNC did not send its banner'"
           timeout 30s docker exec browser-source-smoke ffmpeg -hide_banner -loglevel error \
             -f x11grab -video_size 1280x720 -framerate 5 -i :99.0 \
             -f pulse -i browser_sink.monitor \
             -t 3 -c:v libx264 -c:a aac -f null -
+          docker restart browser-source-smoke
+          for attempt in {1..30}; do
+            if docker exec browser-source-smoke python3 -c \
+              "import socket; s=socket.create_connection(('127.0.0.1',5900),2); s.settimeout(2); assert s.recv(12).startswith(b'RFB ')"; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec browser-source-smoke python3 -c \
+            "import socket; s=socket.create_connection(('127.0.0.1',5900),5); s.settimeout(5); assert s.recv(12).startswith(b'RFB '), 'VNC failed after restart'"
 
       - name: Show container logs if smoke test failed
         if: failure()

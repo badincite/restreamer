@@ -44,9 +44,12 @@ certificate authority, so your browser will initially warn about its
 certificate. Verify the address before accepting the warning. Do not forward
 port 16080 from your router to the internet.
 
-The browser-source container itself publishes no host port. RTMP remains
-internal to the test stack. Create a Restreamer network-source channel
-using `rtmp://restreamer-test:1935/live/browser.stream` after initial setup.
+The browser-source container also publishes its control page on server
+loopback only, at `127.0.0.1:16081`. This is for local diagnostics or an SSH
+tunnel; it is not reachable from the LAN. Use the protected Caddy URL on port
+16080 for LAN access. RTMP remains internal to the test stack. Create a
+Restreamer RTMP-server channel using the detected `/live/browser.stream`
+input after initial setup.
 Keep this test stack private while signing in to the website: the browser's
 screen is captured, including any visible login form.
 

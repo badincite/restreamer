@@ -31,6 +31,8 @@ services:
       BROWSER_RTMP_URL: rtmp://restreamer-test:1935/live/browser.stream
     volumes:
       - browser-test-profile:/home/browser/profile
+    ports:
+      - "127.0.0.1:16081:6080"
 
   browser-control:
     image: caddy:2-alpine

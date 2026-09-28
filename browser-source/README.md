@@ -55,6 +55,10 @@ screen is captured, including any visible login form.
 
 Set `BROWSER_WIDTH`, `BROWSER_HEIGHT`, and `BROWSER_FPS` in Portainer's stack
 environment to change the captured display. For 1080p, use `1920`, `1080`,
-and initially `12` fps. Redeploying the stack applies the new size without
-deleting the browser profile. Software H.264 encoding at 1080p may overload a
-small server; lower `BROWSER_FPS` if playback stutters.
+and initially `24` fps on a host with sufficient CPU. The test stack allows
+the browser source to use up to 7 CPU cores; this is a ceiling, not a
+reservation. Redeploying the stack applies the new size without deleting the
+browser profile. The publisher waits 15 seconds after Chromium starts before
+opening the RTMP stream. Set `BROWSER_WARMUP_SECONDS` to adjust this delay if
+needed. Software H.264 encoding at 1080p may overload a small server; lower
+`BROWSER_FPS` if playback stutters.

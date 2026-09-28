@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     depends_on:
       - restreamer-test
-    cpus: 1.0
+    cpus: 7.0
     mem_limit: 1536m
     shm_size: 512m
     environment:

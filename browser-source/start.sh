@@ -6,6 +6,7 @@ BROWSER_WIDTH=${BROWSER_WIDTH:-1280}
 BROWSER_HEIGHT=${BROWSER_HEIGHT:-720}
 BROWSER_FPS=${BROWSER_FPS:-25}
 BROWSER_PROFILE_DIR=${BROWSER_PROFILE_DIR:-/home/browser/profile}
+BROWSER_WARMUP_SECONDS=${BROWSER_WARMUP_SECONDS:-15}
 
 mkdir -p "$XDG_RUNTIME_DIR" "$BROWSER_PROFILE_DIR"
 chmod 700 "$XDG_RUNTIME_DIR"
@@ -71,11 +72,17 @@ if [ -z "${BROWSER_RTMP_URL:-}" ]; then
     exit $?
 fi
 
+# Chromium can briefly saturate the VM while restoring its profile and page.
+# Starting x11grab during that burst has left a publisher permanently behind
+# real time; let the browser settle before opening the RTMP stream.
+echo "Waiting ${BROWSER_WARMUP_SECONDS}s for browser startup before publishing"
+sleep "$BROWSER_WARMUP_SECONDS"
+
 video_size="${BROWSER_WIDTH}x${BROWSER_HEIGHT}"
 while kill -0 "$browser_pid" 2>/dev/null; do
-    ffmpeg -hide_banner -loglevel warning \
-        -f x11grab -video_size "$video_size" -framerate "$BROWSER_FPS" -i "${DISPLAY}.0" \
-        -f pulse -i browser_sink.monitor \
+    ffmpeg -nostdin -hide_banner -loglevel warning \
+        -thread_queue_size 32 -f x11grab -video_size "$video_size" -framerate "$BROWSER_FPS" -i "${DISPLAY}.0" \
+        -thread_queue_size 256 -f pulse -i browser_sink.monitor \
         -c:v libx264 -preset veryfast -tune zerolatency -pix_fmt yuv420p \
         -g 50 -b:v 3500k \
         -c:a aac -ar 48000 -b:a 128k \

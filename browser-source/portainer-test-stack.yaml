@@ -2,7 +2,7 @@
 # containers, volumes, networks, or published ports.
 services:
   restreamer-test:
-    image: badincite/restreamer:bundle-879ac3a70ee7-ui-67cc21b1fabc
+    image: badincite/restreamer:bundle-fcfa2a5f789b-ui-b6719e6cac83
     restart: unless-stopped
     cpus: 0.75
     mem_limit: 768m

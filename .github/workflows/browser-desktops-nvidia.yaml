@@ -29,7 +29,10 @@ jobs:
       - name: Test UI channel lifecycle
         run: node browser-manager/test-ui-lifecycle.cjs ui/src/utils/restreamer.js
       - name: Build Restreamer UI
-        run: docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim -t badincite/restreamer:browser-ui .
+        run: |
+          docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim --target ui -t restreamer-ui-check .
+          docker run --rm -e CI=true restreamer-ui-check yarn test --watchAll=false --runInBand --runTestsByPath src/misc/BrowserSessions.test.js
+          docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim -t badincite/restreamer:browser-ui .
       - name: Build manager and gateway
         run: |
           docker build -t badincite/restreamer:browser-manager browser-manager

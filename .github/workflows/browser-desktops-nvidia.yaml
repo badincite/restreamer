@@ -31,7 +31,7 @@ jobs:
       - name: Build Restreamer UI
         run: |
           docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim --target ui -t restreamer-ui-check .
-          docker run --rm -e CI=true restreamer-ui-check yarn test --watchAll=false --runInBand --runTestsByPath src/misc/BrowserSessions.test.js
+          docker run --rm -e CI=true restreamer-ui-check yarn test --watchAll=false --runInBand --runTestsByPath src/misc/BrowserSessions.test.js src/misc/BrowserControl.test.js src/misc/ChannelList.test.js
           docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim -t badincite/restreamer:browser-ui .
       - name: Build manager and gateway
         run: |

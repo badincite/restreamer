@@ -1,0 +1,38 @@
+name: Build NVIDIA browser desktops
+on:
+  push:
+    branches: [feature/nvidia-browser-desktops]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: badincite/restreamer-ui
+          ref: feature/nvidia-browser-desktops
+          path: ui
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test manager
+        working-directory: browser-manager
+        run: |
+          pip install aiohttp==3.14.4
+          python -m unittest -v test_manager
+      - name: Test capture and GPU selection
+        working-directory: browser-source
+        run: python -m unittest -v test_gpu_detect test_capture_matcher test_browser_publisher
+      - name: Test UI channel lifecycle
+        run: node browser-manager/test-ui-lifecycle.cjs ui/src/utils/restreamer.js
+      - name: Build Restreamer UI
+        run: docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim -t badincite/restreamer:browser-ui .
+      - name: Build manager and gateway
+        run: |
+          docker build -t badincite/restreamer:browser-manager browser-manager
+          docker build -f browser-manager/Dockerfile.gateway -t badincite/restreamer:browser-gateway browser-manager
+      - name: Build GPU worker (hardware validation requires an NVIDIA host)
+        run: docker build -f browser-source/Dockerfile.nvidia -t badincite/restreamer:browser-nvidia browser-source

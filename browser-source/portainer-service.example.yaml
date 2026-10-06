@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     shm_size: 1gb
     environment:
-      BROWSER_URL: https://seasons4u.com/
+      BROWSER_URL: about:blank
       # Set this to the channel's RTMP publish URL from Restreamer.
       # Replace only the host with your Restreamer service name in this stack.
       BROWSER_RTMP_URL: ${BROWSER_RTMP_URL}

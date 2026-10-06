@@ -10,7 +10,7 @@ services:
       CORE_RTMP_ENABLE: "true"
       CORE_RTMP_APP: /live
     ports:
-      - "192.168.1.11:18080:8080"
+      - "127.0.0.1:18080:8080"
     volumes:
       - restreamer-test-config:/core/config
       - restreamer-test-data:/core/data
@@ -24,7 +24,7 @@ services:
     mem_limit: 1536m
     shm_size: 512m
     environment:
-      BROWSER_URL: https://seasons4u.com/
+      BROWSER_URL: about:blank
       BROWSER_WIDTH: ${BROWSER_WIDTH:-1280}
       BROWSER_HEIGHT: ${BROWSER_HEIGHT:-720}
       BROWSER_FPS: ${BROWSER_FPS:-12}
@@ -47,10 +47,10 @@ services:
     command:
       - |
         hash="$$(caddy hash-password --plaintext "$$CONTROL_PASSWORD")"
-        printf '{\n  default_sni 192.168.1.11\n}\nhttps://192.168.1.11:16080 {\n  tls internal\n  basic_auth {\n    admin %s\n  }\n  reverse_proxy browser-source:6080 {\n    header_up -Authorization\n  }\n}\n' "$$hash" > /tmp/Caddyfile
+        printf '{\n  default_sni 127.0.0.1\n}\nhttps://127.0.0.1:16080 {\n  tls internal\n  basic_auth {\n    admin %s\n  }\n  reverse_proxy browser-source:6080 {\n    header_up -Authorization\n  }\n}\n' "$$hash" > /tmp/Caddyfile
         exec caddy run --config /tmp/Caddyfile --adapter caddyfile
     ports:
-      - "192.168.1.11:16080:16080"
+      - "127.0.0.1:16080:16080"
     volumes:
       - browser-control-data:/data
       - browser-control-config:/config

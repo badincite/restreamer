@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+extensions=""
+for extension in "${BROWSER_EXTENSIONS_DIR:-/home/browser/extensions}"/*; do
+    [ -f "$extension/manifest.json" ] || continue
+    name=${extension##*/}
+    case "$name" in *[!A-Za-z0-9_-]*) continue ;; esac
+    extensions="${extensions:+$extensions,}$extension"
+done
+if [ -n "$extensions" ]; then
+    printf 'CHROMIUM_CUSTOM_ARGS=%s --load-extension=%s\n' "${CHROMIUM_CUSTOM_ARGS:-}" "$extensions"
+fi

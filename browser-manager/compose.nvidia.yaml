@@ -1,0 +1,56 @@
+name: restreamer-browser
+services:
+  restreamer:
+    image: badincite/restreamer:browser-ui
+    restart: unless-stopped
+    environment:
+      CORE_API_AUTH_ENABLE: "true"
+      CORE_API_AUTH_USERNAME: ${ADMIN_USERNAME:-admin}
+      CORE_API_AUTH_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+      CORE_API_AUTH_JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      CORE_RTMP_ENABLE: "true"
+      CORE_RTMP_APP: /live
+      CORE_HOST_NAME: ${PUBLIC_HOST:-localhost}
+    volumes:
+      - restreamer-config:/core/config
+      - restreamer-data:/core/data
+  browser-manager:
+    build: .
+    image: badincite/restreamer:browser-manager
+    restart: unless-stopped
+    environment:
+      CORE_URL: http://restreamer:8080
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN including HTTPS port}
+      DEFAULT_WEBSITE: ${DEFAULT_WEBSITE:-about:blank}
+      GPU_UUID: ${GPU_UUID:?Select one NVIDIA GPU UUID}
+      GPU_BUS_ID: ${GPU_BUS_ID:-auto}
+      GPU_RENDER_NODE: ${GPU_RENDER_NODE:-}
+      GPU_CARD_NODE: ${GPU_CARD_NODE:-}
+      WORKER_OWNER: ${COMPOSE_PROJECT_NAME:-restreamer-browser}
+      WORKER_NETWORK: ${COMPOSE_PROJECT_NAME:-restreamer-browser}_default
+      WORKER_IMAGE: badincite/restreamer:browser-nvidia
+      WORKER_CPUS: ${WORKER_CPUS:-4}
+      WORKER_MEMORY_MB: ${WORKER_MEMORY_MB:-2048}
+      WORKER_SHM_MB: ${WORKER_SHM_MB:-512}
+      MAX_WORKERS: ${MAX_WORKERS:-0}
+      MAX_SESSIONS: ${MAX_SESSIONS:-1000}
+    volumes:
+      - browser-state:/state
+      - /var/run/docker.sock:/var/run/docker.sock
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    image: badincite/restreamer:browser-gateway
+    restart: unless-stopped
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:-localhost}
+    ports:
+      - "${HTTPS_PORT:-18443}:443"
+    volumes:
+      - gateway-data:/data
+volumes:
+  restreamer-config:
+  restreamer-data:
+  browser-state:
+  gateway-data:

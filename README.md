@@ -1,3 +1,11 @@
+## Custom NVIDIA browser desktops
+
+This feature branch adds channel-owned browser containers, embedded controls,
+configurable NVIDIA GPU selection and no default application session cap.
+See [build, compatibility and Portainer instructions](browser-manager/README.nvidia.md).
+The companion UI is on `badincite/restreamer-ui`, branch
+`feature/nvidia-browser-desktops`. This is not a claim of every GPU being tested.
+
 <h1 align="center">Restreamer</h1>
 <h3 align="center">A really nice and free alternative for handling live streams.</h3>
 <p align="center">

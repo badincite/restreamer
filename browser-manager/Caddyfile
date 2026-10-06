@@ -1,0 +1,19 @@
+{
+    default_sni {$PUBLIC_HOST:localhost}
+}
+
+{$PUBLIC_HOST:localhost}:443 {
+    tls internal
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy same-origin
+    }
+    @browser path /browser-api/* /browser-control/*
+    handle @browser {
+        reverse_proxy browser-manager:8090
+    }
+    handle {
+        reverse_proxy restreamer:8080
+    }
+}

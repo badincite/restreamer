@@ -1,0 +1,34 @@
+FROM jlesage/baseimage-gui:debian-12-v4.13.2
+USER 0
+RUN add-pkg ca-certificates curl ffmpeg python3 pulseaudio-utils x11-utils \
+        xserver-xorg-core tigervnc-scraping-server mesa-utils libegl1 libgl1 \
+    && curl --fail --location --silent --show-error \
+        https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+        --output /tmp/google-chrome-stable.deb \
+    && add-pkg /tmp/google-chrome-stable.deb \
+    && rm -f /tmp/google-chrome-stable.deb \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/services.d/xvnc/run /etc/services.d/xvnc/params /etc/services.d/xvnc/is_ready
+COPY xorg-display.py /etc/services.d/xvnc/run
+COPY gpu_detect.py /etc/services.d/xvnc/gpu_detect.py
+COPY xorg-ready.sh /etc/services.d/xvnc/is_ready
+COPY xorg-service-uid /etc/services.d/xvnc/uid
+COPY start-chrome.sh /startapp.sh
+COPY browser-publisher.py capture_matcher.py /usr/local/bin/
+COPY start-wrapper.sh /etc/services.d/browser-publisher/run
+COPY browser-healthcheck.sh /usr/local/bin/browser-healthcheck
+COPY publisher-service/ /etc/services.d/
+RUN sed -i 's/\r$//' /etc/services.d/xvnc/run /etc/services.d/xvnc/gpu_detect.py \
+        /etc/services.d/xvnc/is_ready /etc/services.d/xvnc/uid /startapp.sh \
+        /usr/local/bin/browser-publisher.py /usr/local/bin/capture_matcher.py \
+        /etc/services.d/browser-publisher/run /usr/local/bin/browser-healthcheck \
+        /etc/services.d/app/environment_extra \
+    && chmod 755 /etc/services.d/xvnc/run /etc/services.d/xvnc/is_ready \
+        /startapp.sh /usr/local/bin/browser-publisher.py /etc/services.d/browser-publisher/run \
+        /usr/local/bin/browser-healthcheck /etc/services.d/app/environment_extra \
+    && sh -n /startapp.sh && sh -n /etc/services.d/browser-publisher/run \
+    && python3 -m py_compile /etc/services.d/xvnc/run /etc/services.d/xvnc/gpu_detect.py
+ENV WEB_AUDIO=1 KEEP_APP_RUNNING=1 BROWSER_DIRECT_MODE=off \
+    BROWSER_GPU_RENDER=on BROWSER_HARDWARE_DECODE=off \
+    BROWSER_EXTENSIONS_DIR=/config/extensions NVIDIA_XORG_BUS_ID=auto
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s CMD /usr/local/bin/browser-healthcheck

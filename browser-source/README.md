@@ -35,9 +35,9 @@ DRM bypass, and the site must permit your intended use and rebroadcast.
 `portainer-test-stack.yaml` runs the custom Restreamer image and browser source
 together with new, dedicated named volumes. It leaves an existing standalone
 Restreamer installation untouched. The test Restreamer UI is available on the
-LAN at `http://192.168.1.11:18080/`. A small Caddy proxy protects browser
+LAN at `http://127.0.0.1:18080/`. A small Caddy proxy protects browser
 control with HTTPS and HTTP Basic authentication on
-`https://192.168.1.11:16080/vnc.html`. The proxy username is `admin`; set a
+`https://127.0.0.1:16080/vnc.html`. The proxy username is `admin`; set a
 unique, strong `CONTROL_PASSWORD` in Portainer's stack environment before
 deploying. The password is never stored in this repository. Caddy uses a local
 certificate authority, so your browser will initially warn about its

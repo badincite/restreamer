@@ -1,10 +1,39 @@
-## Custom NVIDIA browser desktops
+## This fork: GPU-backed Xorg browser sources
 
-This feature branch adds channel-owned browser containers, embedded controls,
-configurable NVIDIA GPU selection and no default application session cap.
-See [build, compatibility and Portainer instructions](browser-manager/README.nvidia.md).
-The companion UI is on `badincite/restreamer-ui`, branch
-`feature/nvidia-browser-desktops`. This is not a claim of every GPU being tested.
+This custom Restreamer fork adds an interactive browser as a video source.
+Each browser runs on a headless, NVIDIA-backed Xorg desktop. FFmpeg captures
+the desktop and browser audio, encodes video with H.264 NVENC, and publishes
+it over RTMP to Restreamer. This is screen capture, not embedded video URL
+extraction; OBS is not required.
+
+### What's different from upstream Restreamer?
+
+- A Browser desktop source in channel Video setup, with a configurable website URL.
+- Browser controls accessible from the Restreamer UI for navigation and login.
+- Per-channel browser containers, with start/stop controls and saved login profiles.
+- Channel deletion removes its browser container and session; stopping retains
+  the session. Saved profile volumes remain available for recovery.
+- Configurable resolution and capture FPS, with optional automatic matching of
+  playing-video FPS and available bitrate measurements.
+- Configurable NVIDIA GPU selection and automatic Xorg PCI bus detection.
+- No default application two-session cap (`MAX_WORKERS=0`). GPU/driver limits
+  and available CPU, memory and encoding capacity still apply; no driver unlock
+  patch is included.
+
+**Feature availability:** the Xorg browser stack and matching UI currently live
+on the `feature/nvidia-browser-desktops` branches. The default `2.x` branch and
+upstream Docker images do not include this integrated feature just because
+they display this README.
+
+Start with the [build, compatibility and Docker/Portainer setup guide](https://github.com/badincite/restreamer/blob/feature/nvidia-browser-desktops/browser-manager/README.nvidia.md)
+and the [matching UI branch](https://github.com/badincite/restreamer-ui/tree/feature/nvidia-browser-desktops).
+The worker has been validated on a Quadro K420; other GPUs require compatible
+NVIDIA Xorg/OpenGL, H.264 NVENC, host drivers and NVIDIA Container Toolkit.
+Not every NVIDIA model is supported or tested. The public website default is
+`about:blank`; set your own URL at runtime. Keep browser controls admin-only.
+
+The original upstream overview and setup instructions follow below. For the
+custom browser stack, use the linked guide instead of the upstream quick setup.
 
 <h1 align="center">Restreamer</h1>
 <h3 align="center">A really nice and free alternative for handling live streams.</h3>

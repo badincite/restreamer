@@ -1,5 +1,6 @@
 FROM jlesage/baseimage-gui:debian-12-v4.13.2
-USER 0
+# Specify both IDs: this base image does not provide a conventional passwd database.
+USER 0:0
 RUN add-pkg ca-certificates curl ffmpeg python3 pulseaudio-utils x11-utils \
         xserver-xorg-core tigervnc-scraping-server mesa-utils libegl1 libgl1 \
     && curl --fail --location --silent --show-error \

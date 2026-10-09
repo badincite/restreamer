@@ -27,7 +27,9 @@ jobs:
         working-directory: browser-source
         run: python -m unittest -v test_gpu_detect test_capture_matcher test_browser_publisher
       - name: Test UI channel lifecycle
-        run: node browser-manager/test-ui-lifecycle.cjs ui/src/utils/restreamer.js
+        run: |
+          node browser-manager/test-ui-lifecycle.cjs ui/src/utils/restreamer.js
+          node browser-manager/test-playersite.cjs ui/public/_playersite/videojs.js
       - name: Build Restreamer UI
         run: |
           docker build -f Dockerfile.badincite --build-arg NODE_IMAGE=node:22-bookworm-slim --target ui -t restreamer-ui-check .
